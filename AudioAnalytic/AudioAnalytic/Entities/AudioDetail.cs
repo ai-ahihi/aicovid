@@ -13,8 +13,11 @@ namespace AudioAnalytic.Entities
         [Key]
         public string Uuid { get; set; }
         public string Gender { get; set; }
-        public float Age { get; set; }
-        public int Result { get; set; }
+        public float AgeRaw { get; set; }
+        public int Age { get {
+                return Convert.ToInt16(AgeRaw);
+            } }
+        public int? Result { get; set; }
         public string FileRaw { get; set; }
         public long Time { get; set; }
         public string Description { get; set; }

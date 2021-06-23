@@ -12,7 +12,7 @@ namespace AudioAnalytic.Entities
         public string FileSpec { get; set; }
         public string Feature { get; set; }
         public long Time { get; set; }
-        public Guid RootFile { get; set; }
+        public string RootFile { get; set; }
         [ForeignKey("RootFile")]
         public virtual AudioDetail AudioDetail { get; set; }
     }

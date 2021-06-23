@@ -1,4 +1,6 @@
 using AudioAnalytic;
+using AudioAnalytic.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,14 +17,12 @@ namespace GUI
         [STAThread]
         static void Main()
         {
-            // Application.SetHighDpiMode(HighDpiMode.SystemAware);
-            // Application.EnableVisualStyles();
-            // Application.SetCompatibleTextRenderingDefault(false);
-            //// Application.Run(new Form1());
+            ImportToSQL.Init();
 
-
-            AnalyticData pt = new AnalyticData("public_train/metadata_train_challenge.csv");
-            var tmp = pt.AudioDetails;
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
         }
     }
 }

@@ -19,11 +19,16 @@ namespace AudioAnalytic.Entities
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AudioDetail>().ToTable("AudioDetail");
+          //  modelBuilder.Entity<AudioDetail>().ToTable("AudioDetail");
+
+            modelBuilder.Entity<PublicTrain>().ToTable("PublicTrain");
+            modelBuilder.Entity<PublicTest>().ToTable("PublicTest");
+
             modelBuilder.Entity<FileFeature>().ToTable("FileFeature");
         }
 
-        public DbSet<AudioDetail> AudioDetails { get; set; }
+        public DbSet<PublicTrain> PublicTrains { get; set; }
+        public DbSet<PublicTest> PublicTests { get; set; }
         public DbSet<FileFeature> FileFeatures { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AudioAnalytic.Entities;
 using AudioAnalytic.Mappers;
+using AutoMapper;
 using CsvHelper;
 using CsvHelper.Configuration;
 using System;
@@ -14,28 +15,52 @@ namespace AudioAnalytic
 {
     public class AnalyticData
     {
-        public List<AudioDetail> AudioDetails { get; }
-        public AnalyticData(string fileData, string folderdir = @"F:\Covid\aicovid\AudioAnalytic\AudioAnalytic\datas")
+      //  public List<AudioDetail> _audioDetails { get; }
+        public List<PublicTrain> PublicTrains { get; }
+        public List<PublicTest> PublicTests { get; }
+        public AnalyticData(string folderdir = @"F:\Covid\aicovid\AudioAnalytic\AudioAnalytic\datas")
         {
-            string pathFile = Path.Combine(folderdir, fileData);
+           
             var conf = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = true,
-                
             };
-            using (var reader = new StreamReader(pathFile))
+            // train
+            string pathFileTrain = Path.Combine(folderdir, "public_train/metadata_train_challenge.csv");
+            using (var reader = new StreamReader(pathFileTrain))
             using (var csv = new CsvReader(reader, conf))
             {
                 csv.Context.RegisterClassMap<Csv_MapAudioDetail>();
-                var records = csv.GetRecords<AudioDetail>().ToList();
-                AudioDetails = records.Select(s => new AudioDetail()
+               var _audioDetails = csv.GetRecords<AudioDetail>().ToList();
+
+                PublicTrains = _audioDetails.Select(s => new PublicTrain
                 {
-                    Uuid = s.Uuid,
-                    Age = s.Age,
+                    AgeRaw = s.AgeRaw,
+                    Description = s.Description,
+                    FileRaw = Path.Combine(folderdir, @"public_train\files", s.FileRaw),
                     Gender = s.Gender,
-                    FileRaw = Path.Combine(folderdir, "files", s.FileRaw),
                     Result = s.Result,
-                    Description = s.FileRaw
+                    Uuid = s.Uuid,
+                    Time = 0
+                }).ToList();
+            }
+            // test
+            string pathFileTest = Path.Combine(folderdir, @"public_test\metadata_public_test.csv");
+            using (var reader = new StreamReader(pathFileTest))
+            using (var csv = new CsvReader(reader, conf))
+            {
+                csv.Context.RegisterClassMap<Csv_MapTestDetail>();
+                var _audioDetails = csv.GetRecords<PublicTest>().ToList();
+
+                PublicTests = _audioDetails.Select(s => new PublicTest
+                {
+                    AgeRaw = s.AgeRaw,
+                    Description = s.Description,
+                    FileRaw = Path.Combine(folderdir, "public_test/files", s.FileRaw),
+                    Gender = s.Gender,
+                    Result = s.Result,
+                    Uuid = s.Uuid,
+                    Time = 0
                 }).ToList();
             }
 
