@@ -24,11 +24,13 @@ namespace AudioAnalytic.Entities
             modelBuilder.Entity<PublicTrain>().ToTable("PublicTrain");
             modelBuilder.Entity<PublicTest>().ToTable("PublicTest");
 
-            modelBuilder.Entity<FileFeature>().ToTable("FileFeature");
+            modelBuilder.Entity<TrainFeature>().ToTable("TrainFeature");
+            modelBuilder.Entity<TestFeature>().ToTable("TestFeature");
         }
 
         public DbSet<PublicTrain> PublicTrains { get; set; }
         public DbSet<PublicTest> PublicTests { get; set; }
-        public DbSet<FileFeature> FileFeatures { get; set; }
+        public DbSet<TrainFeature> TrainFeatures { get; set; }
+        public DbSet<TestFeature> TestFeatures { get; set; }
     }
 }

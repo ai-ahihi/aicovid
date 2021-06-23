@@ -15,9 +15,12 @@ namespace AudioAnalytic.Entities
 
             using (var db = new DataContext())
             {
-                db.PublicTrains.AddRange(pt.PublicTrains);
-                db.PublicTests.AddRange(pt.PublicTests);
-                db.SaveChanges();
+                if (db.PublicTrains.Count() == 0)
+                {
+                    db.PublicTrains.AddRange(pt.PublicTrains);
+                    db.PublicTests.AddRange(pt.PublicTests);
+                    db.SaveChanges();
+                }
             }
         }
     }

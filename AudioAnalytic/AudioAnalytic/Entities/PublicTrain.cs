@@ -9,6 +9,10 @@ namespace AudioAnalytic.Entities
 {
     public class PublicTrain //: AudioDetail
     {
+        public PublicTrain()
+        {
+            TrainFeatures = new List<TrainFeature>();
+        }
         [Key]
         public string Uuid { get; set; }
         public string Gender { get; set; }
@@ -22,12 +26,16 @@ namespace AudioAnalytic.Entities
         }
         public int? Result { get; set; }
         public string FileRaw { get; set; }
-        public long Time { get; set; }
+        public double Time { get; set; }
         public string Description { get; set; }
-        public virtual ICollection<FileFeature> FileFeatures { get; set; }
+        public virtual ICollection<TrainFeature> TrainFeatures { get; set; }
     }
     public class PublicTest //: AudioDetail
     {
+        public PublicTest()
+        {
+            TestFeatures = new List<TestFeature>();
+        }
         [Key]
         public string Uuid { get; set; }
         public string Gender { get; set; }
@@ -41,8 +49,8 @@ namespace AudioAnalytic.Entities
         }
         public int? Result { get; set; }
         public string FileRaw { get; set; }
-        public long Time { get; set; }
+        public double Time { get; set; }
         public string Description { get; set; }
-        public virtual ICollection<FileFeature> FileFeatures { get; set; }
+        public virtual ICollection<TestFeature> TestFeatures { get; set; }
     }
 }

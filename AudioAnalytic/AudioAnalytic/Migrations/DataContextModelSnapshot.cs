@@ -19,73 +19,6 @@ namespace AudioAnalytic.Migrations
                 .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("AudioAnalytic.Entities.AudioDetail", b =>
-                {
-                    b.Property<string>("Uuid")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<float>("AgeRaw")
-                        .HasColumnType("real");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileRaw")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Gender")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Result")
-                        .HasColumnType("int");
-
-                    b.Property<long>("Time")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Uuid");
-
-                    b.ToTable("AudioDetail");
-                });
-
-            modelBuilder.Entity("AudioAnalytic.Entities.FileFeature", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Feature")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileRaw")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileSpec")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PublicTestUuid")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PublicTrainUuid")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RootFile")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<long>("Time")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PublicTestUuid");
-
-                    b.HasIndex("PublicTrainUuid");
-
-                    b.HasIndex("RootFile");
-
-                    b.ToTable("FileFeature");
-                });
-
             modelBuilder.Entity("AudioAnalytic.Entities.PublicTest", b =>
                 {
                     b.Property<string>("Uuid")
@@ -106,8 +39,8 @@ namespace AudioAnalytic.Migrations
                     b.Property<int?>("Result")
                         .HasColumnType("int");
 
-                    b.Property<long>("Time")
-                        .HasColumnType("bigint");
+                    b.Property<double>("Time")
+                        .HasColumnType("float");
 
                     b.HasKey("Uuid");
 
@@ -134,44 +67,98 @@ namespace AudioAnalytic.Migrations
                     b.Property<int?>("Result")
                         .HasColumnType("int");
 
-                    b.Property<long>("Time")
-                        .HasColumnType("bigint");
+                    b.Property<double>("Time")
+                        .HasColumnType("float");
 
                     b.HasKey("Uuid");
 
                     b.ToTable("PublicTrain");
                 });
 
-            modelBuilder.Entity("AudioAnalytic.Entities.FileFeature", b =>
+            modelBuilder.Entity("AudioAnalytic.Entities.TestFeature", b =>
                 {
-                    b.HasOne("AudioAnalytic.Entities.PublicTest", null)
-                        .WithMany("FileFeatures")
-                        .HasForeignKey("PublicTestUuid");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.HasOne("AudioAnalytic.Entities.PublicTrain", null)
-                        .WithMany("FileFeatures")
-                        .HasForeignKey("PublicTrainUuid");
+                    b.Property<string>("Feature")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasOne("AudioAnalytic.Entities.AudioDetail", "AudioDetail")
-                        .WithMany("FileFeatures")
-                        .HasForeignKey("RootFile");
+                    b.Property<string>("FileRaw")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Navigation("AudioDetail");
+                    b.Property<string>("FileSpec")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RootFile")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<long>("Time")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RootFile");
+
+                    b.ToTable("TestFeature");
                 });
 
-            modelBuilder.Entity("AudioAnalytic.Entities.AudioDetail", b =>
+            modelBuilder.Entity("AudioAnalytic.Entities.TrainFeature", b =>
                 {
-                    b.Navigation("FileFeatures");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Feature")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileRaw")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileSpec")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RootFile")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<long>("Time")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RootFile");
+
+                    b.ToTable("TrainFeature");
+                });
+
+            modelBuilder.Entity("AudioAnalytic.Entities.TestFeature", b =>
+                {
+                    b.HasOne("AudioAnalytic.Entities.PublicTest", "PublicTest")
+                        .WithMany("TestFeatures")
+                        .HasForeignKey("RootFile");
+
+                    b.Navigation("PublicTest");
+                });
+
+            modelBuilder.Entity("AudioAnalytic.Entities.TrainFeature", b =>
+                {
+                    b.HasOne("AudioAnalytic.Entities.PublicTrain", "PublicTrain")
+                        .WithMany("TrainFeatures")
+                        .HasForeignKey("RootFile");
+
+                    b.Navigation("PublicTrain");
                 });
 
             modelBuilder.Entity("AudioAnalytic.Entities.PublicTest", b =>
                 {
-                    b.Navigation("FileFeatures");
+                    b.Navigation("TestFeatures");
                 });
 
             modelBuilder.Entity("AudioAnalytic.Entities.PublicTrain", b =>
                 {
-                    b.Navigation("FileFeatures");
+                    b.Navigation("TrainFeatures");
                 });
 #pragma warning restore 612, 618
         }

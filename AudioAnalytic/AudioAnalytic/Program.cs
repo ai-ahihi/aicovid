@@ -1,4 +1,4 @@
-using AudioAnalytic;
+﻿using AudioAnalytic;
 using AudioAnalytic.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -18,6 +18,7 @@ namespace GUI
         static void Main()
         {
             ImportToSQL.Init();
+            // kỳ vọng là 4s
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();

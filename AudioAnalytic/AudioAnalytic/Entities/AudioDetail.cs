@@ -21,6 +21,6 @@ namespace AudioAnalytic.Entities
         public string FileRaw { get; set; }
         public long Time { get; set; }
         public string Description { get; set; }
-        public virtual ICollection<FileFeature> FileFeatures { get; set; }
+      //  public virtual ICollection<FileFeature> FileFeatures { get; set; }
     }
 }
