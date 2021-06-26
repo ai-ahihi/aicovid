@@ -1,17 +1,17 @@
 # https://github.com/tensorflow/docs/tree/master/site/en/r1/tutorials
 # https://librosa.org/doc/main/auto_examples/plot_display.html
 
+import tensorflow as tf
 
 import librosa
 import librosa.display
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-
 import librosa
 import librosa.display
 from sklearn.model_selection import train_test_split
-
+from os.path import isfile
 
 # def Wav2Spec(fileName='../AudioAnalytic/datas/outPut/Train/0a0f2632-9a69-41e7-b074-cd5775896baa.wav', N_MFCC = 128):
 #     src, sr = librosa.load(fileName, sr=24000)
@@ -23,6 +23,11 @@ from sklearn.model_selection import train_test_split
 #     print(mfcc.shape)
 #     outfile = '../AudioAnalytic/datas/outPut/TrainND/0a0f2632-9a69-41e7-b074-cd5775896baa.npy'
 #     np.save(outfile, mfcc)
+
+'''
+Ama thanh đã đc cắt đẹp trog folder
+'''
+
 
 def Wav2Spec(folder='../AudioAnalytic/datas/outPut/Train/', folder_save='../AudioAnalytic/datas/outPut/TrainND/',
              N_MFCC=256):
@@ -40,9 +45,9 @@ def Wav2Spec(folder='../AudioAnalytic/datas/outPut/Train/', folder_save='../Audi
         mfcc = librosa.feature.mfcc(y=src, n_mfcc=N_MFCC)
         mfcc = mfcc[:, :, np.newaxis]  # chanel last
         # # mfcc = mfcc[np.newaxis,np.newaxis,:,:] # chanel first
-        # print(mfcc.shape)
+
         outfile = folder_save + f.replace('wav', 'npy')
-        # np.save(outfile, mfcc)
+        np.save(outfile, mfcc)
         if mfcc.shape[0] > min1:
             min1 = mfcc.shape[0]
         if mfcc.shape[2] > min2:
@@ -51,18 +56,12 @@ def Wav2Spec(folder='../AudioAnalytic/datas/outPut/Train/', folder_save='../Audi
     print(min1, min2)
 
 
-def multi_label(class_name):  # makes a "one-hot" vector for each class name called
+def multi_label(result):  # makes a "one-hot" vector for each class name called
     try:
-        vec = np.zeros(2)
+        vec = np.zeros(1)
         # vec = np.full(5,-1)
-        if (class_name == "true"):
-            vec[0] = 0
-            vec[1] = 0
-            vec = vec[np.newaxis, :]
-        elif (class_name == "false"):
-            vec[0] = 0
-            vec[1] = 1
-            vec = vec[np.newaxis, :]
+        if result == 1:
+            vec[0] = 1
         return vec
     except ValueError:
         return None
@@ -72,16 +71,17 @@ def load_data(folder_data, t=0.8):
     files = os.listdir(folder_data)
     total_files = len(files)
 
-    # melgram = np.load(folder_data + '/' + files[0])
-    # mel_dims = melgram.shape
+    melgram = np.load(folder_data + '/' + files[0])
+    mel_dims = melgram.shape
     # print("mel_dims: ", mel_dims)
 
-    # X = np.zeros((total_files, mel_dims[0], mel_dims[1], mel_dims[2]))
-    X = np.zeros((total_files, 128, 235, 1))
+    X = np.zeros((total_files, mel_dims[0], mel_dims[1], mel_dims[2]))
+    # X = np.zeros((total_files, 128, 235, 1))
     Y = np.zeros((total_files, 2))
-
+    print(Y)
     n_train = total_files * t
     train_count = 0
+
     for i, f in enumerate(files):
         audio_path = folder_data + '/' + f
         if i % 50 == 0:
@@ -89,10 +89,19 @@ def load_data(folder_data, t=0.8):
         melgram = np.load(audio_path)
         X[train_count, :, :, :] = melgram
         # lable
-        Y[train_count, :] = int(f.split("_")[0])
+        lb = int(f.split("_")[0])
+        # y = [0, 0]
+        # if lb == 1:
+        #     y = [0, 1]
+        Y[train_count, :] = np.array(multi_label(lb))
         train_count += 1
 
+    print('\r Loaded', train_count)
     x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=100)
+    print("x_train", x_train.shape)
+    print("x_test", x_test.shape)
+    print("y_train", y_train.shape)
+    print("y_test", y_test.shape)
     return x_train, y_train, x_test, y_test
 
 
@@ -124,11 +133,10 @@ def Train(folder):
 
     # input_shape_min = (128, 188, 1)
     # input_shape_max = (128, 235, 1)
-    input_shape = input_shape_max
+    input_shape = (128, 188, 1)
 
     model = tf.keras.models.Sequential([
-        tf.keras.layers.Convolution2D(512, kernel_size=(128, 42), padding='same', name='conv3'),
-
+        # tf.keras.layers.Convolution2D(512, kernel_size=(128, 42), padding='same', name='conv3'),
         tf.keras.layers.Flatten(input_shape=input_shape),
         tf.keras.layers.Dense(512, activation=tf.nn.relu),
         tf.keras.layers.Dropout(0.2),
@@ -139,28 +147,34 @@ def Train(folder):
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
     # load old weight
-    load_checkpoint = True
-    checkpoint_filepath = 'weights.pb'
-    EPOCHS = 5
-    if (load_checkpoint):
-        print("Looking for previous weights...")
-        if (isfile(checkpoint_filepath)):
-            print ('Checkpoint file detected. Loading weights.')
-            model.load_weights(checkpoint_filepath)
-        else:
-            print ('No checkpoint file detected.  Starting from scratch.')
-            load_checkpoint = False
-    else:
-        print('Starting from scratch (no checkpoint)')
-        load_checkpoint = False
-    if load_checkpoint:
-        check = ModelCheckpoint("weights.{epoch:02d}-{val_acc:.5f}.pb", monitor='val_acc', verbose=1,
-                                save_best_only=True, save_weights_only=True, mode='auto')
-        # trained = model.fit(X_train, Y_train, batch_size=32, nb_epoch=EPOCHS, verbose=1,
-        #                     validation_data=(X_test, Y_test), callbacks=[check])
-        model.fit(x_train, y_train, epochs=EPOCHS, callbacks=[check])
-    else:
-        model.fit(x_train, y_train, epochs=EPOCHS)
+    # load_checkpoint = False
+    # checkpoint_filepath = 'weights.pb'
+    # EPOCHS = 5
+    # if (load_checkpoint):
+    #     print("Looking for previous weights...")
+    #     if (isfile(checkpoint_filepath)):
+    #         print ('Checkpoint file detected. Loading weights.')
+    #         model.load_weights(checkpoint_filepath)
+    #     else:
+    #         print ('No checkpoint file detected.  Starting from scratch.')
+    #         load_checkpoint = False
+    # else:
+    #     print('Starting from scratch (no checkpoint)')
+    #     load_checkpoint = False
+    # if load_checkpoint:
+    #     check = ModelCheckpoint("weights.{epoch:02d}-{val_acc:.5f}.pb", monitor='val_acc', verbose=1,
+    #                             save_best_only=True, save_weights_only=True, mode='auto')
+    #     # trained = model.fit(X_train, Y_train, batch_size=32, nb_epoch=EPOCHS, verbose=1,
+    #     #                     validation_data=(X_test, Y_test), callbacks=[check])
+    #     model.fit(x_train, y_train, epochs=EPOCHS, callbacks=[check])
+    # else:
+    #     model.fit(x_train, y_train, epochs=EPOCHS)
+
+    model.compile(optimizer='adam',
+                  loss='sparse_categorical_crossentropy',
+                  metrics=['accuracy'])
+
+    model.fit(x_train, y_train, epochs=5)
     score = model.evaluate(x_test, y_test)
     model.save(checkpoint_filepath)
     print('score/acc')
@@ -168,6 +182,7 @@ def Train(folder):
 
 
 if __name__ == '__main__':
-    Wav2Spec()
-    # folder_train = '../AudioAnalytic/datas/outPut/TrainND/'
-    # Train(folder_train)
+    folder_train = '../AudioAnalytic/datas/outPut/Train/'
+    folder_npy = '../AudioAnalytic/datas/outPut/TrainND/'
+    # Wav2Spec(folder_train, folder_npy)
+    Train(folder_npy)
