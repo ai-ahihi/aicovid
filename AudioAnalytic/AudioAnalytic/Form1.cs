@@ -43,13 +43,14 @@ namespace GUI
                         var subs = new List<TrainFeature>();
                         while (true)
                         {
+                            var fileName = $"{item.Result}_{item.Age}_{item.Gender}_{Guid.NewGuid()}";
                             var sub = new TrainFeature()
                             {
-                                FileRaw = Path.Combine(outFolder, Guid.NewGuid().ToString()) + ".wav", //item.FileRaw,
+                                FileRaw = Path.Combine(outFolder, fileName) + ".wav", //item.FileRaw,
                                 Time = 4,
                                 RootFile = item.Uuid,
-
                             };
+                            
                             reader.CurrentTime = TimeSpan.FromSeconds(timeStart); // jump forward to the position we want to start from
                             WaveFileWriter.CreateWaveFile16(sub.FileRaw, reader.Take(TimeSpan.FromSeconds(Math.Abs(timeEnd - timeStart))));
 
@@ -72,6 +73,7 @@ namespace GUI
                 }
             }
 
+            this.Close();
         }
     }
 }

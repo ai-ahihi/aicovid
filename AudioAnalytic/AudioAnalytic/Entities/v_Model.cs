@@ -13,6 +13,14 @@ namespace AudioAnalytic.Entities
         public int Age { get; set; } = 0;
         public string Name { get; set; }
 
+        public v_Model() { }
+        public v_Model(PublicTrain publicTrain) {
+            this.Result = publicTrain.Result.Value;
+            this.Gender = publicTrain.Gender;
+            this.Age = publicTrain.Age;
+            this.Name = publicTrain.FileRaw;
+
+        }
 
         public string TargetWav
         {
