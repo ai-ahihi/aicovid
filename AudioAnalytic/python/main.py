@@ -47,7 +47,7 @@ def _training(folder_data):
                         # callbacks=[check]
                         )
     score = model.evaluate(x_test, y_test)
-    model.save("cc.h5")
+    model.save("cc2.h5")
     print('score/acc')
     print(score[0], score[1])
 
